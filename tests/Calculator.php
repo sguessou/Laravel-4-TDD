@@ -2,49 +2,65 @@
 
 class Calculator {
 
-	protected $result = 0;
+	protected $result = null;
+	protected $operands = [];
+	protected $operation;
 
 	public function getResult()
 	{
 		return $this->result;
 	}
 
-	public function add()
+	public function setOperands()
 	{
-		$this->calculateAll(func_get_args(), '+');	
+		$this->operands = func_get_args();
 	}
 
-	public function subtract()
+	public function setOperation(Operation $operation)
 	{
-		$this->calculateAll(func_get_args(), '-');
+		$this->operation = $operation;
 	}
 
-	protected function calculateAll(array $nums, $symbol)
+	public function calculate()
 	{
-		foreach ($nums as $num)
+		foreach ($this->operands as $num)
 		{
-			$this->calculate($num, $symbol);
-		}	
-	}
+			if (!is_numeric($num))
+				throw new InvalidArgumentException;
 
-	protected function calculate($num, $symbol)
-	{
-		if (! is_numeric($num))
-			throw new InvalidArgumentException;
-		
-		switch($symbol)
-		{
-			case '+':
-				$this->result += $num;
-			break;
-			
-			case '-':
-				$this->result -= $num;
-			break;		
+			$this->result = $this->operation->run($num, $this->result);
 		}
-	}
 
-	
+		return $this->result;
+	}		
+}//End class Calculator
 
-		
+interface Operation
+{
+	public function run($num, $current);
 }
+
+class Addition implements Operation
+{
+	public function run($num, $current)
+	{
+		return $current + $num;
+	}
+} 
+
+class Subtraction implements Operation
+{
+	public function run($num, $current)
+	{
+		return $current - $num;
+	}
+} 
+
+class Multiplication implements Operation
+{
+	public function run($num, $current)
+	{
+		if (is_null($current)) return $num;
+		return $current * $num;
+	}
+} 

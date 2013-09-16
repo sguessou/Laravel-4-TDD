@@ -9,7 +9,7 @@ class CalculatorTest extends PHPUnit_Framework_TestCase {
 
 	public function testResultDefaultToZero()
 	{
-		$this->assertSame(0, $this->calc->getResult());
+		$this->assertSame(null, $this->calc->getResult());
 	}
 
    
@@ -18,31 +18,59 @@ class CalculatorTest extends PHPUnit_Framework_TestCase {
 	*/
 	public function testRequireNumericValue()
 	{
-		$this->calc->add('five');
+		$this->calc->setOperands('five');
+
+		$this->calc->setOperation(new Addition);
+
+		$result = $this->calc->calculate();
 	}
 
 
 	public function testAcceptsMultipleArgs()
 	{
-		$this->calc->add(1, 2, 3, 4);
+		$this->calc->setOperands(1, 2, 3, 4);
 
-		$this->assertEquals(10, $this->calc->getResult());
+		$this->calc->setOperation(new Addition);
+
+		$result = $this->calc->calculate();
+
+		$this->assertEquals(10, $result);
+		
 		$this->assertNotEquals('Snoop Doggy Dogg and Dr. Dre is at the door', $this->calc->getResult());
 
 	}
 
 	public function testAddNumbers()
 	{
-		$this->calc->add(5);
+		$this->calc->setOperands(5);
 
-		$this->assertEquals(5, $this->calc->getResult());
+		$this->calc->setOperation(new Addition);
+
+		$result = $this->calc->calculate();
+
+		$this->assertEquals(5, $result);
 	}
 
 	public function testSubtract()
 	{
-		$this->calc->subtract(4);
+		$this->calc->setOperands(4);
 
-		$this->assertEquals(-4, $this->calc->getResult());
+		$this->calc->setOperation(new Subtraction);
+
+		$result = $this->calc->calculate();
+
+		$this->assertEquals(-4, $result);
+	}
+
+	public function testMultipliesNumbers()
+	{
+		$this->calc->setOperands(1, 2, 3, 4);
+
+		$this->calc->setOperation(new Multiplication);
+
+		$result = $this->calc->calculate();
+
+		$this->assertEquals(24, $result);
 	}
 
 }
